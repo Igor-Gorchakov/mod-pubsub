@@ -59,7 +59,6 @@
   },
   "required": [
     "id",
-    "eventType",
-    "metadata"
+    "eventType"
   ]
 }

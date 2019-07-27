@@ -25,7 +25,22 @@ resourceTypes:
   collection-item: !include raml-util/rtypes/item-collection.raml
 
 /pubsub:
-  get:
-    description: Stub endpoint
-    responses:
-      200:
+  /events:
+    /{id}:
+      description: Get a event by id
+      get:
+        responses:
+          200:
+            body:
+              application/json:
+                type: event
+          400:
+            description: "Bad request"
+            body:
+              text/plain:
+                example: "Bad request"
+          500:
+            description: "Internal server error"
+            body:
+              text/plain:
+                example: "Internal server error"
