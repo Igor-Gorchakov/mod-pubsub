@@ -27,17 +27,39 @@ public abstract class AbstractRestTest {
   @BeforeClass
   public static void setUpClass(final TestContext context) throws Exception {
     vertx = Vertx.vertx();
-    runTestDatabase();
-    runTestVertical(context);
+    runDatabase();
+    deployVertical(context);
   }
 
-  private static void runTestDatabase() throws Exception {
-    PostgresClient.stopEmbeddedPostgres();
-    PostgresClient.setIsEmbedded(true);
-    PostgresClient.getInstance(vertx).startEmbeddedPostgres();
+  private static void runDatabase() throws Exception {
+    String useExternalDatabase = System.getProperty(
+      "org.folio.converter.storage.test.database",
+      "embedded");
+
+    switch (useExternalDatabase) {
+      case "environment":
+        System.out.println("Using environment settings");
+        break;
+      case "external":
+        String postgresConfigPath = System.getProperty(
+          "org.folio.converter.storage.test.config",
+          "/postgres-conf-local.json");
+        PostgresClient.setConfigFilePath(postgresConfigPath);
+        break;
+      case "embedded":
+        PostgresClient.stopEmbeddedPostgres();
+        PostgresClient.setIsEmbedded(true);
+        PostgresClient.getInstance(vertx).startEmbeddedPostgres();
+        break;
+      default:
+        String message = "No understood database choice made." +
+          "Please set org.folio.converter.storage.test.database" +
+          "to 'external', 'environment' or 'embedded'";
+        throw new Exception(message);
+    }
   }
 
-  private static void runTestVertical(TestContext context) {
+  private static void deployVertical(TestContext context) {
     Async async = context.async();
     vertx = Vertx.vertx();
     int port = NetworkUtils.nextFreePort();

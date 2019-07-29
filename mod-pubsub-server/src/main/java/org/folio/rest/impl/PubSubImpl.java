@@ -43,7 +43,7 @@ public class PubSubImpl implements Pubsub {
           } else {
             String errorMessage = "Can not find Event with id: " + id;
             LOGGER.error(errorMessage);
-            response = GetPubsubEventsByIdResponse.respond400WithTextPlain(errorMessage);
+            response = GetPubsubEventsByIdResponse.respond404WithTextPlain(errorMessage);
           }
         } else {
           String errorMessage = "Failed to get Event by id. Cause: " + ar.cause().getLocalizedMessage();

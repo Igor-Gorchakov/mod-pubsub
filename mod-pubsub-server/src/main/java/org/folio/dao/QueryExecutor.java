@@ -8,28 +8,28 @@ import java.util.function.Supplier;
 
 import static org.folio.rest.RestVerticle.MODULE_SPECIFIC_ARGS;
 
-public class DaoExecutor {
+public class QueryExecutor {
   private static final int THREAD_POOL_SIZE =
-    Integer.parseInt(MODULE_SPECIFIC_ARGS.getOrDefault("file.processing.thread.pool.size", "20"));
-
+    Integer.parseInt(MODULE_SPECIFIC_ARGS.getOrDefault("query.executor.thread.pool.size", "20"));
   /* WorkerExecutor provides separate worker pool for code execution */
   private final static WorkerExecutor EXECUTOR =
-    Vertx.vertx().createSharedWorkerExecutor("processing-files-thread-pool", THREAD_POOL_SIZE);
+    Vertx.currentContext().owner().createSharedWorkerExecutor("query-executor", THREAD_POOL_SIZE);
 
-  public static <R> Future<R> executeBlocking(Supplier<R> supplier) {
+  public static <T> Future<T> executeBlocking(Supplier<T> supplier) {
     if (supplier == null) {
       throw new NullPointerException();
     } else {
-      Future<R> future = Future.future();
-      try {
-        EXECUTOR.executeBlocking(blockingFuture -> {
-          R returnValue = supplier.get();
+      Future<T> future = Future.future();
+      EXECUTOR.executeBlocking(blockingFuture -> {
+        try {
+          T returnValue = supplier.get();
           future.complete(returnValue);
           blockingFuture.complete();
-        }, false, null);
-      } catch (Throwable e) {
-        future.fail(e);
-      }
+        } catch (Throwable e) {
+          future.fail(e);
+          blockingFuture.failed();
+        }
+      }, false, null);
       return future;
     }
   }

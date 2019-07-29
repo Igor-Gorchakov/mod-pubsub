@@ -12,10 +12,9 @@ public class PersistanceConfig {
   public JdbcTemplate createJdbcTemplateBean() {
     DriverManagerDataSource dataSource = new DriverManagerDataSource();
     dataSource.setDriverClassName("org.postgresql.Driver");
-    dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
+    dataSource.setUrl("jdbc:postgresql://localhost:6000/postgres");
     dataSource.setUsername("username");
     dataSource.setPassword("password");
-
     return new JdbcTemplate(dataSource);
   }
 }
