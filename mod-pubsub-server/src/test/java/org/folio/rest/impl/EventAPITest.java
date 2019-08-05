@@ -1,14 +1,16 @@
 package org.folio.rest.impl;
 
 import io.restassured.RestAssured;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.apache.http.HttpStatus;
-import org.folio.rest.persist.Criteria.Criterion;
-import org.folio.rest.persist.PostgresClient;
+import org.folio.dao.util.LiquibaseUtil;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @RunWith(VertxUnitRunner.class)
 public class EventAPITest extends AbstractRestTest {
@@ -17,9 +19,8 @@ public class EventAPITest extends AbstractRestTest {
   private static final String TABLE_NAME = "events";
 
   @Test
-  public void shouldReturnNotFoundOnGetWhenEventDoesNotExist() {
-//    String eventId = UUID.randomUUID().toString();
-    String eventId = "1";
+  public void shouldReturnEventOnGetById() {
+    String eventId = "f14bb724-15bd-4a20-81f7-b698094160d0";
     RestAssured.given()
       .spec(spec)
       .when()
@@ -28,15 +29,13 @@ public class EventAPITest extends AbstractRestTest {
       .statusCode(HttpStatus.SC_OK);
   }
 
-  @Override
-  public void clearTables(TestContext context) {
-//    Async async = context.async();
-//    PostgresClient.getInstance(vertx, TENANT_ID).delete(TABLE_NAME, new Criterion(), event -> {
-//      if (event.failed()) {
-//        context.fail(event.cause());
-//      }
-//      async.complete();
-//    });
+  @Test
+  public void shouldReturnModuleConfig() throws SQLException {
+    try (Connection connection = LiquibaseUtil.getConnectionForModule()) {
+      ResultSet resultSet = connection.createStatement().executeQuery("select module, events from pubsub_config.module_events limit 1");
+      Assert.assertTrue(resultSet.next());
+      Assert.assertEquals("test", resultSet.getString("module"));
+      Assert.assertEquals("list of events", resultSet.getString("events"));
+    }
   }
-
 }

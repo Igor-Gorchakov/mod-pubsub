@@ -93,8 +93,4 @@ public abstract class AbstractRestTest {
       async.complete();
     }));
   }
-
-  @Before
-  public abstract void clearTables(TestContext context);
-
 }
