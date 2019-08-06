@@ -9,7 +9,11 @@
       "handlers": [
         {
           "methods": ["GET"],
-          "pathPattern": "/pubsub"
+          "pathPattern": "/pubsub/events/{id}"
+        },
+        {
+          "methods": ["GET"],
+          "pathPattern": "/pubsub/module-info"
         }
       ]
     },

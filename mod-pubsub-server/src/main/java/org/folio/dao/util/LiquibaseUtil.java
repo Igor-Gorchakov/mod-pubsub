@@ -41,7 +41,7 @@ public class LiquibaseUtil {
       LOGGER.info("Database is initialized for tenant " + tenant);
       future.complete();
     } catch (Exception e) {
-      String errorMessage = "Error while initializing database for tenant. Cause: " + e.getCause();
+      String errorMessage = "Error while initializing database for tenant. Cause: " + e.getMessage();
       LOGGER.error(errorMessage);
       future.fail(errorMessage);
     }
@@ -92,7 +92,7 @@ public class LiquibaseUtil {
       LOGGER.info("Database is initialized for the module");
       future.complete();
     } catch (Exception e) {
-      String errorMessage = "Error while initializing database for the module. Cause: " + e.getCause();
+      String errorMessage = "Error while initializing database for the module. Cause: " + e.getMessage();
       LOGGER.error(errorMessage);
       future.fail(e);
     }

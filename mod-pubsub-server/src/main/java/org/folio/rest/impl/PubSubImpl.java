@@ -5,7 +5,9 @@ import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import org.folio.dao.util.LiquibaseUtil;
 import org.folio.rest.jaxrs.model.Event;
+import org.folio.rest.jaxrs.model.ModuleInfo;
 import org.folio.rest.jaxrs.resource.Pubsub;
 import org.folio.rest.tools.utils.TenantTool;
 import org.folio.service.EventService;
@@ -15,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.core.Response;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -56,6 +60,30 @@ public class PubSubImpl implements Pubsub {
       LOGGER.error("Exception while getting Event by id. Cause: " + e.getLocalizedMessage(), e);
       asyncResultHandler.handle(Future.succeededFuture(
         GetPubsubEventsByIdResponse.respond500WithTextPlain(Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase())));
+    }
+  }
+
+  @Override
+  public void getPubsubModuleInfo(Map<String, String> okapiHeaders, Handler<AsyncResult<Response>> asyncResultHandler, Context vertxContext) {
+    try (Connection connection = LiquibaseUtil.getConnectionForModule()) {
+      ResultSet resultSet = connection.createStatement().executeQuery("select module, events from pubsub_config.module_events limit 1");
+      Response response;
+      if (resultSet.next()) {
+        String module = resultSet.getString("module");
+        String events = resultSet.getString("events");
+        ModuleInfo moduleInfo = new ModuleInfo()
+          .withKey(module)
+          .withValue(events);
+        response = GetPubsubModuleInfoResponse.respond200WithApplicationJson(moduleInfo);
+      } else {
+        String errorMessage = "Can not find module information";
+        LOGGER.error(errorMessage);
+        response = GetPubsubModuleInfoResponse.respond404WithTextPlain(errorMessage);
+      }
+      asyncResultHandler.handle(Future.succeededFuture(response));
+    } catch (Exception e) {
+      asyncResultHandler.handle(Future.succeededFuture(
+        GetPubsubModuleInfoResponse.respond500WithTextPlain(Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase())));
     }
   }
 }
