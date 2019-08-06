@@ -11,9 +11,12 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
+import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.resource.FileSystemResourceAccessor;
 import org.folio.rest.persist.PostgresClient;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,8 +24,8 @@ import java.sql.Statement;
 
 public class LiquibaseUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(LiquibaseUtil.class);
-  private static final String CHANGELOG_MODULE_PATH = "src/main/resources/liquibase/module/changelog.xml";
-  private static final String CHANGELOG_TENANT_PATH = "src/main/resources/liquibase/tenant/changelog.xml";
+  private static final String CHANGELOG_MODULE_PATH = "liquibase/module/changelog.xml";
+  private static final String CHANGELOG_TENANT_PATH = "liquibase/tenant/changelog.xml";
   private static final String MODULE_SCHEMA = "pubsub_config";
 
   private static final String JDBC_DRIVER = "jdbc:postgresql";
@@ -73,7 +76,7 @@ public class LiquibaseUtil {
     try {
       Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
       database.setDefaultSchemaName(schemaName);
-      liquibase = new Liquibase(changelogPath, new FileSystemResourceAccessor(), database);
+      liquibase = new Liquibase(changelogPath, new ClassLoaderResourceAccessor(), database);
       liquibase.update(new Contexts());
     } finally {
       if (liquibase != null && liquibase.getDatabase() != null) {
