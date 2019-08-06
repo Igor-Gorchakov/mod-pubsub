@@ -46,16 +46,6 @@ public class EventDaoImpl implements EventDao {
   private Event mapToEvent(JsonObject jsonObject) {
     return new Event()
       .withId(jsonObject.getString("id"))
-      .withEventType(jsonObject.getString("eventType"))
-      .withEventPayload(jsonObject.getString("eventPayload"))
-      .withMetadata(new Metadata()
-        .withTenantId(jsonObject.getString("metadata_tenantId"))
-        .withCorrelationId(jsonObject.getString("metadata_correlationId"))
-        .withOriginalEventId(jsonObject.getString("metadata_originalEventId"))
-        .withOriginalEventId(jsonObject.getString("metadata_originalEventId"))
-        .withPublisherCallback(new PublisherCallback()
-          .withEndpoint("metadata_publisherCallback_endpoint")
-          .withEventType("metadata_publisherCallback_eventType"))
-      );
+      .withEventType(jsonObject.getString("eventType"));
   }
 }

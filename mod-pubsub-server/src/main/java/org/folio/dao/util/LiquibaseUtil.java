@@ -35,12 +35,6 @@ public class LiquibaseUtil {
   private static final String CONFIG_PORT_KEY = "port";
   private static final String CONFIG_DATABASE_KEY = "database";
 
-  /**
-   * Runs Liquibase scripts in a separate thread to initialize database for a given tenant
-   *
-   * @param tenant given tenant
-   * @return future
-   */
   public static Future<Void> initializeDatabaseForTenant(String tenant) {
     Future<Void> future = Future.future();
     LOGGER.info("Initializing database for tenant " + tenant);
@@ -50,7 +44,7 @@ public class LiquibaseUtil {
       LOGGER.info("Database is initialized for tenant " + tenant);
       future.complete();
     } catch (Exception e) {
-      String errorMessage = "Error while database initialization. Cause: " + e.getCause();
+      String errorMessage = "Error while initializing database for tenant. Cause: " + e.getCause();
       LOGGER.error(errorMessage);
       future.fail(errorMessage);
     }
@@ -67,12 +61,6 @@ public class LiquibaseUtil {
     return getConnectionInternal(connectionConfig);
   }
 
-  /**
-   * Obtains database connection for given tenant
-   *
-   * @return database connection
-   * @throws SQLException if database access error occurred
-   */
   private static Connection getConnectionInternal(JsonObject connectionConfig) throws SQLException {
     String username = connectionConfig.getString(CONFIG_USERNAME_KEY);
     String password = connectionConfig.getString(CONFIG_PASSWORD_KEY);
@@ -83,15 +71,6 @@ public class LiquibaseUtil {
     return DriverManager.getConnection(connectionUrl, username, password);
   }
 
-  /**
-   * Runs scripts for a given tenant
-   * Runs scripts for a given tenant
-   *
-   * @param schemaName    tenant
-   * @param connection    database connection
-   * @param changelogPath
-   * @throws LiquibaseException if scripts run is failed
-   */
   private static void runScripts(String schemaName, Connection connection, String changelogPath) throws LiquibaseException {
     Liquibase liquibase = null;
     try {
@@ -107,28 +86,22 @@ public class LiquibaseUtil {
     }
   }
 
-  /**
-   * @return
-   */
   public static Future<Void> initializeDatabaseForModule() {
     Future<Void> future = Future.future();
+    LOGGER.info("Initializing database for the module");
     try (Connection connection = getConnectionForModule()) {
       createSchema(MODULE_SCHEMA, connection);
       runScripts(MODULE_SCHEMA, connection, CHANGELOG_MODULE_PATH);
-      LOGGER.info("Connection is OK!");
+      LOGGER.info("Database is initialized for the module");
       future.complete();
     } catch (Exception e) {
-      LOGGER.error(e);
+      String errorMessage = "Error while initializing database for the module. Cause: " + e.getCause();
+      LOGGER.error(errorMessage);
       future.fail(e);
     }
     return future;
   }
 
-  /**
-   * @param schemaName
-   * @param connection
-   * @throws SQLException
-   */
   private static void createSchema(String schemaName, Connection connection) throws SQLException {
     try (Statement statement = connection.createStatement()) {
       String sql = "create schema if not exists " + schemaName;

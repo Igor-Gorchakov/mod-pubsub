@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.apache.http.HttpStatus;
 import org.folio.dao.util.LiquibaseUtil;
+import org.folio.rest.tools.utils.Envs;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +17,6 @@ import java.sql.SQLException;
 public class EventAPITest extends AbstractRestTest {
 
   private static final String RESOURCE_PATH = "/pubsub/events";
-  private static final String TABLE_NAME = "events";
 
   @Test
   public void shouldReturnEventOnGetById() {
