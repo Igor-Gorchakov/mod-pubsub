@@ -19,9 +19,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * Util class to work with Liquibase nature
- */
 public class LiquibaseUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(LiquibaseUtil.class);
   private static final String CHANGELOG_MODULE_PATH = "src/main/resources/liquibase/module/changelog.xml";
