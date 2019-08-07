@@ -27,7 +27,7 @@ public class ModTenantAPI extends TenantAPI {
             String tenantId = headers.get(RestVerticle.OKAPI_HEADER_TENANT);
             LiquibaseUtil.initializeDatabaseForTenant(tenantId).setHandler(ar -> blockingFuture.complete());
           },
-          result -> handler.handle(result.succeeded() ? Future.succeededFuture() : Future.failedFuture(result.cause()))
+          result -> handler.handle(postTenantAr)
         );
       }
     }, context);
