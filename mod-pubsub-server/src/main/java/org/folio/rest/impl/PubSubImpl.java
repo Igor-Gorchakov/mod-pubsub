@@ -65,7 +65,7 @@ public class PubSubImpl implements Pubsub {
 
   @Override
   public void getPubsubModuleInfo(Map<String, String> okapiHeaders, Handler<AsyncResult<Response>> asyncResultHandler, Context vertxContext) {
-    try (Connection connection = LiquibaseUtil.getConnectionForModule()) {
+    try (Connection connection = LiquibaseUtil.getConnectionForModule(vertxContext.owner())) {
       ResultSet resultSet = connection.createStatement().executeQuery("select module, events from pubsub_config.module_events limit 1");
       Response response;
       if (resultSet.next()) {
