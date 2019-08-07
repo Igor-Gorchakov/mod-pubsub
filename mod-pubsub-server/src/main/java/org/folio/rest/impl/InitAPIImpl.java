@@ -17,7 +17,8 @@ public class InitAPIImpl implements InitAPI {
     vertx.executeBlocking(
       blockingFuture -> {
         SpringContextUtil.init(vertx, context, ApplicationConfig.class);
-        LiquibaseUtil.initializeDatabaseForModule().setHandler(ar -> blockingFuture.complete());
+        LiquibaseUtil.initializeDatabaseForModule(vertx);
+        blockingFuture.complete();
       },
       result -> handler.handle(result.succeeded() ? Future.succeededFuture(true) : Future.failedFuture(result.cause()))
     );

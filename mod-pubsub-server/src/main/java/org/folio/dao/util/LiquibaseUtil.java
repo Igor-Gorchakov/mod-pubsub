@@ -32,10 +32,10 @@ public class LiquibaseUtil {
   private static final String CONFIG_PORT_KEY = "port";
   private static final String CONFIG_DATABASE_KEY = "database";
 
-  public static Future<Void> initializeDatabaseForTenant(String tenant) {
+  public static Future<Void> initializeDatabaseForTenant(Vertx vertx, String tenant) {
     Future<Void> future = Future.future();
     LOGGER.info("Initializing database for tenant " + tenant);
-    try (Connection connection = getConnectionForTenant(tenant)) {
+    try (Connection connection = getConnectionForTenant(vertx, tenant)) {
       String schemaName = PostgresClient.convertToPsqlStandard(tenant);
       runScripts(schemaName, connection, CHANGELOG_TENANT_PATH);
       LOGGER.info("Database is initialized for tenant " + tenant);
@@ -48,13 +48,13 @@ public class LiquibaseUtil {
     return future;
   }
 
-  private static Connection getConnectionForTenant(String tenant) throws SQLException {
-    JsonObject connectionConfig = PostgresClient.getInstance(Vertx.vertx().getOrCreateContext().owner(), tenant).getConnectionConfig();
+  private static Connection getConnectionForTenant(Vertx vertx, String tenant) throws SQLException {
+    JsonObject connectionConfig = PostgresClient.getInstance(vertx, tenant).getConnectionConfig();
     return getConnectionInternal(connectionConfig);
   }
 
-  public static Connection getConnectionForModule() throws SQLException {
-    JsonObject connectionConfig = PostgresClient.getInstance(Vertx.vertx().getOrCreateContext().owner()).getConnectionConfig();
+  public static Connection getConnectionForModule(Vertx vertx) throws SQLException {
+    JsonObject connectionConfig = PostgresClient.getInstance(vertx).getConnectionConfig();
     return getConnectionInternal(connectionConfig);
   }
 
@@ -83,20 +83,16 @@ public class LiquibaseUtil {
     }
   }
 
-  public static Future<Void> initializeDatabaseForModule() {
-    Future<Void> future = Future.future();
+  public static void initializeDatabaseForModule(Vertx vertx) {
     LOGGER.info("Initializing database for the module");
-    try (Connection connection = getConnectionForModule()) {
+    try (Connection connection = getConnectionForModule(vertx)) {
       createSchema(MODULE_SCHEMA, connection);
       runScripts(MODULE_SCHEMA, connection, CHANGELOG_MODULE_PATH);
       LOGGER.info("Database is initialized for the module");
-      future.complete();
     } catch (Exception e) {
       String errorMessage = "Error while initializing database for the module. Cause: " + e.getMessage();
       LOGGER.error(errorMessage);
-      future.fail(e);
     }
-    return future;
   }
 
   private static void createSchema(String schemaName, Connection connection) throws SQLException {

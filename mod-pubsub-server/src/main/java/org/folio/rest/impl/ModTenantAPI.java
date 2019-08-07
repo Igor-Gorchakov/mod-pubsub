@@ -2,7 +2,6 @@ package org.folio.rest.impl;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import org.folio.dao.util.LiquibaseUtil;
@@ -22,10 +21,11 @@ public class ModTenantAPI extends TenantAPI {
       if (postTenantAr.failed()) {
         handler.handle(postTenantAr);
       } else {
-        Vertx.currentContext().executeBlocking(
+        Vertx vertx = context.owner();
+        vertx.executeBlocking(
           blockingFuture -> {
             String tenantId = headers.get(RestVerticle.OKAPI_HEADER_TENANT);
-            LiquibaseUtil.initializeDatabaseForTenant(tenantId).setHandler(ar -> blockingFuture.complete());
+            LiquibaseUtil.initializeDatabaseForTenant(vertx, tenantId).setHandler(ar -> blockingFuture.complete());
           },
           result -> handler.handle(postTenantAr)
         );
