@@ -67,8 +67,7 @@ public class PubSubImpl implements Pubsub {
   @Override
   public void getPubsubModuleInfo(Map<String, String> okapiHeaders, Handler<AsyncResult<Response>> asyncResultHandler, Context vertxContext) {
     try {
-      Vertx vertx = vertxContext.owner();
-      PostgresClient postgresClient = PostgresClient.getInstance(vertx);
+      PostgresClient postgresClient = postgresClientFactory.createInstance();
       postgresClient.execute("select module, events from pubsub_config.module_events limit 1", ar -> {
         Response response;
         if (ar.failed()) {

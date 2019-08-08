@@ -20,4 +20,14 @@ public class PostgresClientFactory {
   public PostgresClient createInstance(String tenantId) {
     return PostgresClient.getInstance(vertx, tenantId);
   }
+
+  /**
+   * Creates instance of Postgres Client
+   *
+   * @return Postgres Client
+   */
+  public PostgresClient createInstance() {
+    return PostgresClient.getInstance(vertx);
+  }
+
 }
