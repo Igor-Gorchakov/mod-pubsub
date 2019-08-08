@@ -35,7 +35,7 @@ public class LiquibaseUtil {
   public static Future<Void> initializeDatabaseForTenant(Vertx vertx, String tenant) {
     Future<Void> future = Future.future();
     LOGGER.info("Initializing database for tenant " + tenant);
-    try (Connection connection = getConnectionForTenant(vertx, tenant)) {
+    try (Connection connection = getConnection(vertx, tenant)) {
       String schemaName = PostgresClient.convertToPsqlStandard(tenant);
       runScripts(schemaName, connection, CHANGELOG_TENANT_PATH);
       LOGGER.info("Database is initialized for tenant " + tenant);
@@ -48,12 +48,12 @@ public class LiquibaseUtil {
     return future;
   }
 
-  private static Connection getConnectionForTenant(Vertx vertx, String tenant) throws SQLException {
+  private static Connection getConnection(Vertx vertx, String tenant) throws SQLException {
     JsonObject connectionConfig = PostgresClient.getInstance(vertx, tenant).getConnectionConfig();
     return getConnectionInternal(connectionConfig);
   }
 
-  public static Connection getConnectionForModule(Vertx vertx) throws SQLException {
+  public static Connection getConnection(Vertx vertx) throws SQLException {
     JsonObject connectionConfig = PostgresClient.getInstance(vertx).getConnectionConfig();
     return getConnectionInternal(connectionConfig);
   }
@@ -85,7 +85,7 @@ public class LiquibaseUtil {
 
   public static void initializeDatabaseForModule(Vertx vertx) {
     LOGGER.info("Initializing database for the module");
-    try (Connection connection = getConnectionForModule(vertx)) {
+    try (Connection connection = getConnection(vertx)) {
       createSchema(MODULE_SCHEMA, connection);
       runScripts(MODULE_SCHEMA, connection, CHANGELOG_MODULE_PATH);
       LOGGER.info("Database is initialized for the module");
