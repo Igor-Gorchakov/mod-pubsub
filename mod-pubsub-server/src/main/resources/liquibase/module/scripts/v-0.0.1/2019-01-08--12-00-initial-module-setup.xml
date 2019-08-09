@@ -3,7 +3,7 @@
                    xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd'>
 
-  <changeSet id="create-module_events-table-2019-02-08--13-00" author="Igor-Gorchakov">
+  <changeSet id="2019-01-08--12-00-create-module_events-table" author="Igor-Gorchakov">
     <createTable tableName="module_events">
       <column name="module" type="text">
         <constraints primaryKey="true" nullable="false" unique="true" />
@@ -12,7 +12,7 @@
     </createTable>
   </changeSet>
 
-  <changeSet id="insert-data-to-module_events_table-2019-02-08--14-00" author="Igor-Gorchakov">
+  <changeSet id="2019-01-08--12-00-insert-data-to-module_events_table" author="Igor-Gorchakov">
     <insert tableName="module_events">
       <column name="module" value="test"/>
       <column name="events" value="list of events"/>
