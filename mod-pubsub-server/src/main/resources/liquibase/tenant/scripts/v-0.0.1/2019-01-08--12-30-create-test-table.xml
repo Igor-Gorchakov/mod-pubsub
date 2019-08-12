@@ -1,0 +1,20 @@
+<databaseChangeLog xmlns='http://www.liquibase.org/xml/ns/dbchangelog'
+                   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+                   xsi:schemaLocation='http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd'>
+  <changeSet id="2019-01-08--12-30-create-test-table" author="Igor-Gorchakov">
+    <createTable tableName="events">
+      <column name="id" type="text">
+        <constraints primaryKey="true" nullable="false" unique="true" />
+      </column>
+      <column name="eventType" type="text"/>
+      <column name="eventPayload" type="text"/>
+      <column name="metadata_tenantId" type="text"/>
+      <column name="metadata_eventTTL" type="text"/>
+      <column name="metadata_correlationId" type="text"/>
+      <column name="metadata_originalEventId" type="text"/>
+      <column name="metadata_publisherCallback_endpoint" type="text"/>
+      <column name="metadata_publisherCallback_eventType" type="text"/>
+    </createTable>
+  </changeSet>
+</databaseChangeLog>

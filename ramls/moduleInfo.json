@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "module information",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "key": {
+      "description": "key",
+      "type": "string"
+    },
+    "value": {
+      "description": "value",
+      "type": "string"
+    }
+  }
+}
